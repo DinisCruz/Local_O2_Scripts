@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<H2>
+  <SourceCode>var topPanel = O2Gui.open&lt;Panel&gt;("PoC - Create TSV for 'GPC Project Details' Project data", 800,500)
+					.insert_LogViewer();
+//var topPanel  = panel.add_Panel(true);
+var wikiApi = new OwaspWikiAPI(false); 
+var textArea = topPanel.clear().add_TextArea().wordWrap(false) ;
+List&lt;Items&gt; itemsList = null;
+var numberToLoad = -1;
+
+Action loadData =   
+	()=&gt;{	
+			textArea.pink();
+			var allPages = "allPages".o2Cache(() =&gt; wikiApi.allPages());
+			var gpcProjectDetails = allPages.containing("GPC Project Details").toList().take(numberToLoad);
+			//return gpcProjectDetails;
+			itemsList = wikiApi.getDataFromPagesTemplateData(gpcProjectDetails);						
+		};
+
+Action&lt;List&lt;string&gt;&gt; createForColumns = 
+	(columns)=&gt; {
+					var tsvData = columns.join("	").line();
+					foreach(var items in itemsList)
+					{	
+						tsvData += items.values(columns).join("	").line();
+					} 
+					textArea.set_Text(tsvData);
+					var tsvFile = tsvData.saveWithExtension("tsv");
+					"TSV file created: {0}".info(tsvFile);
+					textArea.white();
+				};
+				
+Action viewForCommonKeys = 
+	()=&gt;{
+			var columns = itemsList.uniqueKeys_WithValidValue();	
+			createForColumns(columns);
+		};
+		
+Action viewForAllUniqueKeysWithValues = 
+	()=&gt;{
+			var columns = new [] {
+									"_TARGET_PAGE","project_name","project_description","leader_name","leader_username","project_road_map","current_release_name","current_release_details","last_GPC_update","GPC_Notes","project_home_page"
+								 }.toList();
+			createForColumns(columns);
+		};
+		
+
+topPanel.insert_Above(40,"Actions")
+	    .add_Link("View TSV file for All Unique Keys With Values", viewForAllUniqueKeysWithValues)
+	    .append_Link("View TSV file for Common Keys ", ()=&gt; viewForCommonKeys());
+
+loadData();
+viewForCommonKeys();
+return "ok";
+
+var allData = itemsList;
+//return mappedData;
+//topPanel.add_TableList().show(mappedData);
+return allData;
+
+//O2File:_Extra_methods_To_Add_to_Main_CodeBase.cs
+
+//O2File:OwaspWikiAPI.cs
+//O2Package:owasp.ico</SourceCode>
+  <ReferencedAssemblies />
+</H2>

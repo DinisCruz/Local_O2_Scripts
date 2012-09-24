@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<H2>
+  <SourceCode>var topPanel = O2Gui.open&lt;Panel&gt;("PoC - OWASP 'GPC Project Details' Project", 800,500)
+					.insert_LogViewer();
+//var topPanel  = panel.add_Panel(true);
+var wikiApi = new OwaspWikiAPI(false);
+var projectPages = topPanel.insert_Left(350, "Project Pages").add_TreeView();
+
+var textArea = topPanel.add_TextArea();
+
+projectPages.afterSelect&lt;string&gt;( 
+	(page)=&gt;{						
+				var wikiText = wikiApi.wikiText(page);
+				textArea.set_Text(wikiText);
+			});
+			
+Action loadData = 
+	()=&gt;{
+			textArea.set_Text("Loading Pages List");
+			projectPages.selectFirst();
+			var allPages = "allPages".o2Cache(() =&gt; wikiApi.allPages());
+			projectPages.add_Nodes(allPages.containing("GPC Project Details"));
+		};
+
+loadData();
+
+//O2File:OwaspWikiAPI.cs</SourceCode>
+  <ReferencedAssemblies />
+</H2>

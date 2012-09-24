@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<H2>
+  <SourceCode>return PublicDI.config.CurrentExecutableDirectory;
+//var topPanel = "{name}".popupWindow(700,400);
+var topPanel = panel.clear().add_Panel();
+var textArea = topPanel.add_TextArea();
+var page = "GPC Project Details/OWASP AppSec FAQ Project";
+var wikiApi = new OwaspWikiAPI(false);
+
+//var wikiText = wikiApi.wikiText(page);
+//var text = textArea.set_Text(wikiText);
+var items = new Items();
+var allPages = "allPages".o2Cache(() =&gt; wikiApi.allPages());
+var projectPages = allPages.containing("GPC Project Details"); 
+
+
+foreach(var projectPage in projectPages.Take(5))
+{
+	var wikiText = wikiApi.wikiText(projectPage);
+	foreach(var line in wikiText.lines().remove(0))
+	{
+		if (line.eq("}}"))
+			continue;	
+		
+		var splitted = line.split("=");
+		//var variableName = splitted.shi
+		if (splitted.size()!=2)
+			return line;
+		//items.add(
+	}
+}
+return "ok";
+
+
+
+//O2File:OwaspWikiAPI.cs</SourceCode>
+  <ReferencedAssemblies />
+</H2>
